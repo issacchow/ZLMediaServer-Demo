@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  zlmediakit:
+    image: zlmediakit/zlmediakit:master
+    container_name: zlm_server
+    restart: always
+    ports:
+      - "8800:554"    # RTSP 端口 (宿主机8554 -> 容器554)
+      - "1935:1935"   # RTMP 端口
+      - "8080:80"     # HTTP API & 播放端口
+    volumes:
+      - ./zlm/config.ini:/opt/media/conf/config.ini
+    depends_on:
+      - webhook_debugger
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - zlm_net
+
+  webhook_debugger:
+    image: nginx:alpine
+    container_name: zlm_webhook_debug
+    restart: always
+    ports:
+      - "9090:80"     # 将调试服务暴露在宿主机 9090 端口，方便你用 Postman 测试
+    volumes:
+      - ./nginx/webhook.conf:/etc/nginx/conf.d/default.conf:ro
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - zlm_net
+
+  zlm_admin:
+    image: nginx:alpine
+    container_name: zlm_admin
+    restart: always
+    ports:
+      - "7070:80"     # 将调试服务暴露在宿主机 9090 端口，方便你用 Postman 测试
+    volumes:
+      - ./zlm_webassist:/zlm_webassist:ro
+      - ./nginx/zlm_webassist.conf:/etc/nginx/conf.d/default.conf:ro
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - zlm_net
+
+
+
+
+networks:
+  zlm_net:
+    driver: bridge
+
