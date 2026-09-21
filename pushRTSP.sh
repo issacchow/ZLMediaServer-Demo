@@ -1,6 +1,5 @@
 host=172.16.136.84:8800
-# 公司网络原因，不能使用外网ip推送
-#host=183.6.152.75:8080  
+
 
 target_url="rtsp://$host/live/test_stream/great-wall?username=123"
 
